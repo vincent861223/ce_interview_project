@@ -15,23 +15,43 @@ Holding his head up for a flag of all the free.
 
 How you implement the "match" model is up to you but be prepared to justify the choices you make.  Assume the user doesn't have perfect recall and will confuse words from different lines on occasion.
 
+## How to run the code
+### Using virtual environment
+```
+virtualenv venv
+pip install -r requirements.txt
+python my_solution.py
+```
+
+### Without virtual environment
+```
+pip install -r requirements.txt
+python my_solution.py
+```
+
 ## Implementation Notes
+Similarity is calculated by the matrix multiplication of the BOW matrix and the given
+        sentence. 
 
-* The code can be written in the language of your choice.
-* You can use libraries written by others as long as you can explain what they're doing.
-* Your solution must run on Debian Buster (linux).  Use Docker if you need to.
-* Provide clear instructions for how to compile/run your code, along with any required packages that are not installed by default on Debian Buster.
-* If you find these requirements to be ambiguous, go with your best guess and document your decision.
+        For example, suppose there are 3 sentences with 6 unique words in the poem, and we would
+        like to find the most_similar sentence with "love good you"
+        ['I', 'love', 'have', 'am', 'good', 'you'] 
 
-## Submission Process
+        [BOW matrix]
+        "I love you" -> [[1 1 0 0 0 1], 
+        "I am good"  ->  [1 0 0 1 1 0],  
+        "I have you" ->  [1 0 1 0 0 1]]
 
-* Create a repository on Github with your code and email us a link.
-* The repository should include a README.md that clearly describes how to compile and run your code.
+        [BOW of given sentence("love good you")]
+        "love good you"
+        [0 1 0 0 1 1]
 
-## Review Criteria
-In the code review we'll cover:
+        [Matrix Multiplication] 
+        The result of the matrix multiplication is the similarity of the given sentence with 
+        each sentence in the poems. The sentence index of the maximum is the result. 
+            [[1 1 0 0 0 1], 
+             [1 0 0 1 1 0],   *   [0 1 0 0 1 1]  =  [2, 1, 1]  
+             [1 0 1 0 0 1]]
+        First sentence has the best result. 
 
-* Simplicity (how complicated is your design?)
-* Clarity (how easy is it to understand _what_ your code is doing and _why_ it's doing it?)
-* Alternatives (what other approaches did you consider? Why didn't you go with one of them?)
-* Performance (the poem is not long, your runtime shouldn't be either)
+
