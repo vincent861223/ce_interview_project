@@ -75,10 +75,11 @@ class BowEncoder(Encoder):
         for word in sentence: 
             if not word in self.word2Idx: continue
             encoding[self.word2Idx[word]] += 1
-
+        if (np.linalg.norm(encoding) != 0):
+            encoding /= np.linalg.norm(encoding)
         return encoding
 
-    def most_similar(self, sentence):
+    def getSimilarity(self, sentence):
         """ Find the sentence in the poem that has highest similarity with the given sentence.
 
         Similarity is calculated by the matrix multiplication of the BOW matrix and the given
@@ -114,5 +115,4 @@ class BowEncoder(Encoder):
         """
         enc_sentence = self.encode(sentence)
         similarity = np.matmul(self.bow_matrix, enc_sentence) 
-        if np.max(similarity) == 0: return -1
-        return np.argmax(similarity)
+        return similarity

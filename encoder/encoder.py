@@ -7,7 +7,7 @@ class Encoder(ABC):
         pass
     
     @abstractmethod
-    def most_similar(sentence):
+    def getSimilarity(sentence):
         pass
 
     

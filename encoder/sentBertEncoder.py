@@ -19,9 +19,13 @@ class SentBertEncoder(Encoder):
 
     def encode(self, sentence):
         sentence = " ".join(sentence)
-        return self.model.encode(sentence) 
+        enc = self.model.encode(sentence) 
+        print(enc.shape)
+        if (np.linalg.norm(enc) != 0):
+            enc /= np.linalg.norm(enc)
+        return enc
     
     def most_similar(self, sentence):
         enc_sentence = self.encode(sentence)
         similarity = np.matmul(self.bow_matrix, enc_sentence) 
-        return np.argmax(similarity)
+        return similarity

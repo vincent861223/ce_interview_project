@@ -1,13 +1,13 @@
 from lib2to3.pgen2.tokenize import tokenize
 from telnetlib import DO
-
+import numpy as np
 import nltk
 import re
 nltk.download('punkt')
 from nltk.tokenize import word_tokenize
-# from encoder.doc2VecEncoder import Doc2VecEncoder
+from encoder.doc2VecEncoder import Doc2VecEncoder
 from encoder.bowEncoder import BowEncoder
-# from encoder.sentBertEncoder import SentBertEncoder
+from encoder.sentBertEncoder import SentBertEncoder
 
 class Searcher: 
 
@@ -22,7 +22,10 @@ class Searcher:
         self.tokenized_sentences = []
         for sentence in self.sentences:
             self.tokenized_sentences.append(self.tokenize(sentence))
-        self.encoder = BowEncoder(self.tokenized_sentences)
+        self.encoder1 = BowEncoder(self.tokenized_sentences)
+        self.encoder2 = Doc2VecEncoder(self.tokenized_sentences)
+        self.weight_bow = 0.6
+
 
     def load_sentences(self, filename):
         """ Load sentence from the file and return the preprocessed sentence
@@ -34,7 +37,9 @@ class Searcher:
         sentences = []
         with open(filename, 'r') as f:
             for line in f.readlines():
-                sentences.append(line.strip('\n'))
+                line = line.strip('\n')
+                if (len(line) > 0): 
+                    sentences.append(line)
 
         return sentences
 
@@ -48,7 +53,7 @@ class Searcher:
             str: Sentence after preprocessed
         """
         sentence = sentence.lower()
-        return re.sub('[^A-Za-z0-9 ]+', '', sentence)
+        return re.sub('[^A-Za-z0-9 ]+', ' ', sentence)
                 
     def tokenize(self, sentence):
         """ Tokenize the sentence.
@@ -73,6 +78,7 @@ class Searcher:
             str: The sentence that is most similar to the given sentence
         """
         sentence = self.tokenize(sentence)
-        idx = self.encoder.most_similar(sentence) 
-        if idx == -1: return "[All the words given are not in the poem]"
+        similarity1 = self.encoder1.getSimilarity(sentence) 
+        similarity2 = self.encoder2.getSimilarity(sentence)
+        idx = np.argmax(self.weight_bow * similarity1 + (1-self.weight_bow) * similarity2)
         return self.sentences[idx] 
